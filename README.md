@@ -20,12 +20,14 @@ Graders, ignore these instructions.
 2. `cd` personalized-game-controller
 3. `git checkout main`
 4. `git pull`
+5. `git checkout dev`
+6. `git pull`
 
 
 Then, create your own branch:
 
 
-5. `git checkout -b YOURNAME-branch`
+7. `git checkout -b YOURNAME-branch`
 
 
 To build (on MacOS with Homebrew) from the repo root:
@@ -34,34 +36,35 @@ To build (on MacOS with Homebrew) from the repo root:
 Note: If you're on Windows, good luck! ChatGPT is your best bet.
 
 
-6. `npm install`
-7. `brew install ruby`
-8. `echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> ~/.zshrc`
-9. `source ~/.zshrc`
-10. `gem install slim`
+8. `npm install`
+9. `brew install ruby`
+10. `echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> ~/.zshrc`
+11. `source ~/.zshrc`
+12. `gem install slim`
 
 
 Now verify that ruby and slimrb are correctly installed:
 
 
-11. `which ruby` → should display a file path
-12. `which slimrb` → should display a file path. Once working, skip to step 17
+13. `which ruby` → should display a file path
+14. `which slimrb` → should display a file path. Once working, skip to step 17
 
 
-*If step 12 says slimrb is not found*:
+*If step 14 says slimrb is not found*:
 
 
-13. `ruby -e 'puts Gem.bindir'` → should display a file path for slimrb. Copy that path.
-14. `echo 'export PATH="YOUR-PATH-HERE"' >> ~/.zshrc`
-15. `source ~/.zshrc`
-16. verify again with step 12
+15. `ruby -e 'puts Gem.bindir'` → should display a file path for slimrb. Copy that path.
+16. `echo 'export PATH="YOUR-PATH-HERE"' >> ~/.zshrc`
+17. `source ~/.zshrc`
+18. verify again with step 14
 
 
 To commit your branch:
 
 
-17. `git commit -m "your-commit-message"`
-18. `git push -u origin your-branch-name`
+19. `git add .`
+20. `git commit -m "your-commit-message"`
+21. `git push -u origin your-branch-name`
 
 
 Once Step 12 works and you've committed your branch, proceed to the "TO BUILD" section. From now on you should just be able to build. To commit your branch:
