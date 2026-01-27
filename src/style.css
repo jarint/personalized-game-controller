@@ -1,0 +1,157 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  font-family: system-ui;
+  position: relative;
+}
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+}
+#wrap {
+  height: 300px;
+  display: grid;
+  place-items: center;
+}
+svg {
+  height: 300px;
+  width: auto;
+  max-width: 100%;
+  filter: drop-shadow(0 0 8px rgba(0,0,0,0.7));
+}
+#hud {
+  position: absolute;
+  user-select: none;
+  right: 24px;
+  bottom: 24px;
+  display: grid;
+  gap: 14px;
+  padding: 18px 22px;
+  min-width: 200px;
+  background: linear-gradient(180deg, rgba(20,20,24,0.92), rgba(8,8,10,0.92));
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+  backdrop-filter: blur(14px);
+  color: #e6e6e6;
+  text-align: center;
+  font-family: 'Press Start 2P', system-ui;
+}
+#hud #hint {
+  display: grid;
+  gap: 10px;
+}
+#hud #hint .code {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9aa0a6;
+  line-height: 1.4;
+}
+#hud #hint button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(180deg, #2a2a30, #141418);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+  font-family: 'Press Start 2P', system-ui;
+}
+#hud #hint button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.1);
+  background: linear-gradient(180deg, #34343c, #1a1a1f);
+}
+#hud #hint button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+#hud #hint button:before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0));
+  pointer-events: none;
+}
+.interactive {
+  cursor: pointer;
+}
+.pressed {
+  filter: brightness(65%);
+}
+.cheat {
+  background: linear-gradient(135deg, #ff004c 0%, #ff7a00 20%, #ffe600 40%, #00ffd5 60%, #4c6bff 80%, #b000ff 100%);
+  background-size: 600% 600%;
+  animation: cheatshift 6s ease-in-out infinite;
+}
+.cheat:after {
+  content: 'You found the Code!';
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: start;
+  align-items: center;
+  margin-left: 32px;
+  font-size: 32px;
+  font-family: 'Press Start 2P', system-ui;
+  color: #fff;
+  text-shadow: 0 0 24px rgba(0,0,0,0.6);
+  pointer-events: none;
+}
+@-moz-keyframes cheatshift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@-webkit-keyframes cheatshift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@-o-keyframes cheatshift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes cheatshift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
