@@ -1,0 +1,35 @@
+# =========================
+# OS / Editor junk
+# =========================
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# =========================
+# Logs
+# =========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Dependency folders (ONLY if you use them)
+# =========================
+node_modules/
+
+# =========================
+# Build / output folders (ONLY if generated)
+# =========================
+dist/
+build/
+.out/
+
+# =========================
+# Temporary / cache files
+# =========================
+*.tmp
+*.temp
+.cache/
