@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 	const svg = document.getElementById('pad')
 	const demo = document.getElementById('demo')
 
-	const ids = ['up','down','left','right','x','o','square','triangle','start','select','lb','rb']
+	//const ids = ['up','down','left','right','x','o','square','triangle','start','select','lb','rb']
+	const ids = ['x','o','square'] // make only the four acction buttons clickable
 	const pressed = new Set()
 
 	function get(id){
@@ -24,6 +25,34 @@ document.addEventListener('DOMContentLoaded',()=>{
 	function release(el){
 		el.classList.remove('pressed')
 		pressed.delete(el)
+	}
+
+	// camera overlay (triangle replacement)
+	// makes camera behave like other buttons: pressed visuals + register("triangle")
+	const camera = document.querySelector("#triangle_camera .camera");
+	if (camera) {
+		camera.addEventListener("pointerdown", (e) => {
+			if (demoRunning) return;
+			e.preventDefault();
+
+			// register as if triangle was pressed (no pressed visuals)
+			register("triangle");
+
+			// flash animation
+			camera.classList.remove("is_flashing");
+			void camera.offsetWidth; // restart animation
+			camera.classList.add("is_flashing");
+		});
+
+		// remove is_flashing when the animation finishes
+		const light = camera.querySelector(".light");
+		if (light) {
+			light.addEventListener("animationend", (e) => {
+				if (e.animationName === "flash") {
+					camera.classList.remove("is_flashing");
+				}
+			});
+		}
 	}
 
 	let demoRunning = false
