@@ -3,6 +3,26 @@ document.addEventListener('DOMContentLoaded',()=>{
 	const svg = document.getElementById('pad')
 	const demo = document.getElementById('demo')
 
+
+	// camera overlay (replaces triangle)
+	const camera = document.querySelector("#triangle_camera .camera");
+	if (camera) {
+		camera.addEventListener("click", () => {
+		camera.classList.remove("is_flashing");
+		void camera.offsetWidth; // restart animation
+		camera.classList.add("is_flashing");
+
+		// also register as if "triangle" was pressed
+		register("triangle");
+		});
+
+		camera.addEventListener("animationend", (e) => {
+		if (e.animationName === "flash" && e.target.classList.contains("light")) {
+			camera.classList.remove("is_flashing");
+		}
+		});
+	}
+
 	//const ids = ['up','down','left','right','x','o','square','triangle','start','select','lb','rb']
 	const ids = ['x','o','square','triangle'] // make only the four acction buttons clickable
 	const pressed = new Set()
