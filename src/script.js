@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 	const svg = document.getElementById('pad')
 	const demo = document.getElementById('demo')
 
-	const ids = ['up','down','left','right','x','o','square','triangle','start','select','lb','rb']
+	//const ids = ['up','down','left','right','x','o','square','triangle','start','select','lb','rb']
+	const ids = ['x','o','square','triangle'] // make only the four acction buttons clickable
 	const pressed = new Set()
 
 	function get(id){

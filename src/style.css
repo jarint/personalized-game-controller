@@ -12,7 +12,16 @@ body {
   width: 100vw;
   height: 100vh;
   display: grid;
-  place-items: center;
+  align-items: center;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+.layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  width: 100%;
 }
 #wrap {
   height: 300px;
@@ -86,6 +95,50 @@ svg {
   background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0));
   pointer-events: none;
 }
+#tv {
+  display: grid;
+  place-items: center;
+}
+#tv_container {
+  max-width: 780px;
+  width: 780px;
+}
+#tv_monitor {
+  background: #000;
+  position: relative;
+  border-top: 3px solid #888;
+  padding: 2% 2% 4% 2%;
+  border-radius: 10px;
+  border-bottom-left-radius: 50% 2%;
+  border-bottom-right-radius: 50% 2%;
+}
+#tv_monitor:after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 3%;
+  left: 36%;
+  height: 0.5%;
+  width: 28%;
+  background: #ddd;
+  border-radius: 50%;
+  box-shadow: 0 0 3px 0 #fff;
+}
+#tv_screen {
+  position: relative;
+  background-color: #777;
+  background-size: cover;
+  background-position: top center;
+  height: 0;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+  border-radius: 6px;
+}
+@media all and (min-width: 960px) {
+  #tv_monitor {
+    animation: tvflicker 0.5s infinite alternate;
+  }
+}
 .interactive {
   cursor: pointer;
 }
@@ -110,6 +163,38 @@ svg {
   color: #fff;
   text-shadow: 0 0 24px rgba(0,0,0,0.6);
   pointer-events: none;
+}
+@-moz-keyframes tvflicker {
+  0% {
+    box-shadow: 0 0 100px 0 rgba(225,235,255,0.4);
+  }
+  100% {
+    box-shadow: 0 0 60px 0 rgba(200,220,255,0.6);
+  }
+}
+@-webkit-keyframes tvflicker {
+  0% {
+    box-shadow: 0 0 100px 0 rgba(225,235,255,0.4);
+  }
+  100% {
+    box-shadow: 0 0 60px 0 rgba(200,220,255,0.6);
+  }
+}
+@-o-keyframes tvflicker {
+  0% {
+    box-shadow: 0 0 100px 0 rgba(225,235,255,0.4);
+  }
+  100% {
+    box-shadow: 0 0 60px 0 rgba(200,220,255,0.6);
+  }
+}
+@keyframes tvflicker {
+  0% {
+    box-shadow: 0 0 100px 0 rgba(225,235,255,0.4);
+  }
+  100% {
+    box-shadow: 0 0 60px 0 rgba(200,220,255,0.6);
+  }
 }
 @-moz-keyframes cheatshift {
   0% {
