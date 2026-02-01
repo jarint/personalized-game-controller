@@ -59,7 +59,7 @@ svg
 	left 79.24%     // tweak
 	top 24.35%     // tweak
 	transform translate(-50%, -50%) translate(18px, 80px) scale(0.85)  // tweak scale
-	transform origin center
+	transform-origin center
 
 
 

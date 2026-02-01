@@ -56,7 +56,7 @@ svg {
   left: 79.24%;
   top: 24.35%;
   transform: translate(-50%, -50%) translate(18px, 80px) scale(0.85);
-  transform: origin center;
+  transform-origin: center;
 }
 #triangle_camera > .camera {
   display: block;
