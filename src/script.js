@@ -27,39 +27,67 @@ document.addEventListener('DOMContentLoaded',()=>{
 		pressed.delete(el)
 	}
 
-	// =================================================================
-	// BUTTON HANDLERS - Add custom functionality for each button here
-	// =================================================================
-
-	// Triangle Button Handler (Camera)
 	const cameraHandler = {
 		setup() {
-			// Makes camera behave like other buttons: pressed visuals + register("triangle")
-			const camera = document.querySelector("#triangle_camera .camera");
+			const camera =
+			document.querySelector("#triangle_camera .camera") ||
+			document.querySelector("#triangle_camera > .camera");
 			if (!camera) return;
 
+			let holdTimer = null;
+
+			// play the flash animation reliably
+			const triggerFlash = () => {
+			camera.classList.remove("is_flashing");
+			void camera.offsetWidth; // restart animation
+			camera.classList.add("is_flashing");
+			};
+
 			camera.addEventListener("pointerdown", (e) => {
-				if (demoRunning) return;
-				e.preventDefault();
+			if (demoRunning) return;
+			e.preventDefault();
 
-				// Register as if triangle was pressed (no pressed visuals)
-				register("triangle");
+			// If DNA already active: just flash + reset timer
+			if (gameManager.activeGame === "dna") {
+				gameManager.resetInactivityTimer();
+				triggerFlash();
+				return;
+			}
 
-				// Flash animation
-				camera.classList.remove("is_flashing");
-				void camera.offsetWidth; // Restart animation
-				camera.classList.add("is_flashing");
+			// Start hold timer (2s)
+			holdTimer = setTimeout(() => {
+				gameManager.startGame("dna");
+				holdTimer = null;
+				triggerFlash(); // flash on successful start
+			}, gameManager.HOLD_DURATION);
 			});
 
-			// Remove is_flashing when the animation finishes
-			const light = camera.querySelector(".light");
-			if (light) {
-				light.addEventListener("animationend", (e) => {
-					if (e.animationName === "flash") camera.classList.remove("is_flashing");
-				});
+			// If released early: cancel start but still flash
+			const cancelHold = () => {
+			if (holdTimer) {
+				clearTimeout(holdTimer);
+				holdTimer = null;
+				triggerFlash(); // flash on short click
 			}
-		}
+			};
+
+			camera.addEventListener("pointerup", cancelHold);
+			camera.addEventListener("pointerleave", cancelHold);
+			camera.addEventListener("pointercancel", cancelHold);
+
+			// remove class after animation ends (listen on the light if present)
+			const light =
+			camera.querySelector(".light") ||
+			document.querySelector("#triangle_camera .light");
+
+			if (light) {
+			light.addEventListener("animationend", (e) => {
+				if (e.animationName === "flash") camera.classList.remove("is_flashing");
+			});
+			}
+		},
 	};
+
 
 	// O Button Handler (Soccer Game)
 	const soccerHandler = {
@@ -190,8 +218,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 		}
 	};
 
-	// Initialize handlers
-	cameraHandler.setup();
+
 
 	// =================================================================
 	// GAME MANAGER - Handles hold-to-start, exclusive games, timeout
@@ -217,6 +244,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 				boxingGame.cleanup();
 			} else if (this.activeGame === 'soccer') {
 				soccerHandler.cleanup();
+			} else if (this.activeGame === 'dna') {
+			  dnaHelix.cleanup();
 			}
 			this.activeGame = null;
 			if (this.inactivityTimer) {
@@ -238,6 +267,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 				boxingGame.start();
 			} else if (game === 'soccer') {
 				soccerHandler.start();
+			} else if (game === 'dna') {
+			  dnaHelix.start();
 			}
 			this.resetInactivityTimer();
 		},
@@ -253,6 +284,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 			}
 		}
 	};
+
+	// Initialize handlers
+	cameraHandler.setup();
 
 	// Boxing Game
 	const boxingGame = {
@@ -437,6 +471,125 @@ document.addEventListener('DOMContentLoaded',()=>{
 		});
 	}
 
+
+
+	// INTERACTIVE DNA HELIX ANIMATION
+	const dnaHelix = {
+		tvScreen: document.getElementById("tv_screen"),
+		canvas: null,
+		scene: null,
+		raf: null,
+
+		resizeCanvasToTv() {
+			if (!this.canvas || !this.tvScreen) return;
+					
+			const rect = this.tvScreen.getBoundingClientRect();
+					
+			// Set the canvas *buffer* size (real pixels)
+			this.canvas.width = Math.floor(rect.width);
+			this.canvas.height = Math.floor(rect.height);
+
+					
+			// Tell Zdog about size change if scene exists
+			if (this.scene) {
+				this.scene.setSize(this.canvas.width, this.canvas.height);
+			}
+		},
+		start() {
+			if (!this.tvScreen) return;
+			if (this.scene) return; // already running
+
+			// Create canvas dynamically (like soccer/boxing)
+			this.canvas = document.createElement("canvas");
+			this.canvas.className = "dna_canvas";
+			this.tvScreen.appendChild(this.canvas);
+
+
+			// IMPORTANT: make canvas buffer match tv_screen
+			this.resizeCanvasToTv();
+
+			// keep updated on resize
+			this._on_resize = () => this.resizeCanvasToTv();
+			window.addEventListener("resize", this._on_resize);
+
+			const { Illustration, TAU, Shape } = window.Zdog;
+
+			// IMPORTANT: do NOT use fullscreen
+			this.scene = new Illustration({
+				element: this.canvas,
+				dragRotate: true,
+				resize: false, // resize to canvas element
+			});
+
+			// --- your existing DNA setup below ---
+			const MARGIN = 15;
+			const SPAN = 40;
+			const STRAND_STROKE = 4;
+			const BALL_PADDING = 5;
+			const BALL_DIAMETER = 10;
+			const STRANDS = 23;
+			const STRAND = "silver";
+			const COLORS = [
+			"rgb(252, 254, 248)",
+			"rgb(251, 164, 82)",
+			"rgb(37, 175, 186)",
+			"rgb(225, 7, 130)",
+			];
+			const randomColor = () => COLORS[Math.floor(Math.random() * COLORS.length)];
+			const YSTART = -((STRANDS - 1) * MARGIN) / 2;
+
+			const Strand = new Shape({
+			stroke: STRAND_STROKE,
+			color: STRAND,
+			path: [{ x: -SPAN }, { x: SPAN }],
+			});
+
+			const Ball = new Shape({
+			stroke: BALL_DIAMETER * 2,
+			translate: { x: -(BALL_DIAMETER + SPAN + BALL_PADDING) },
+			});
+
+			new Array(STRANDS).fill().forEach((_, i) => {
+			const strand = Strand.copy({
+				addTo: this.scene,
+				rotate: { y: (TAU / STRANDS) * i },
+				translate: { y: YSTART + i * MARGIN },
+			});
+
+			Ball.copy({ addTo: strand, color: randomColor() });
+			Ball.copy({
+				addTo: strand,
+				color: randomColor(),
+				translate: { x: BALL_DIAMETER + SPAN + BALL_PADDING },
+			});
+			});
+
+			const tick = () => {
+			if (!this.scene) return;
+			this.scene.rotate.y -= 0.03;
+			this.scene.updateRenderGraph();
+			this.raf = requestAnimationFrame(tick);
+			};
+			tick();
+		},
+
+		cleanup() {
+			if (this.raf) cancelAnimationFrame(this.raf);
+			this.raf = null;
+
+			this.scene = null;
+
+			if (this.canvas) {
+				this.canvas.remove(); // IMPORTANT: remove from tvScreen like others do
+				this.canvas = null;
+			}
+
+			if (this._on_resize) {
+			  window.removeEventListener("resize", this._on_resize);
+			  this._on_resize = null;
+			}
+		},
+	};
 	// =================================================================
 	// END BUTTON HANDLERS
 	// =================================================================
