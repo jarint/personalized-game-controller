@@ -274,6 +274,52 @@ svg {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
   pointer-events: none;
 }
+#theme_square_button {
+  position: absolute;
+  left: 76%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+}
+#theme_square_button > .theme-icon {
+  display: block;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.1s ease;
+  pointer-events: auto;
+}
+#theme_square_button .theme-icon:hover {
+  transform: scale(1.1);
+}
+#theme_square_button .theme-icon:active {
+  transform: scale(0.95);
+}
+#theme_square_button .theme-icon img {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  pointer-events: none;
+}
+#theme_square_button .press-gif {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(1.15);
+  pointer-events: none;
+  z-index: 2;
+}
+#theme_square_button .theme-icon:active .press-gif {
+  opacity: 1;
+}
+#theme_square_button .theme-icon > img:first-child {
+  position: relative;
+  z-index: 1;
+}
 #hud {
   position: absolute;
   user-select: none;
