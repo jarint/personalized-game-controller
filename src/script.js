@@ -193,13 +193,247 @@ document.addEventListener('DOMContentLoaded',()=>{
 	// Initialize handlers
 	cameraHandler.setup();
 
-	// Setup football overlay click handler
+	// =================================================================
+	// GAME MANAGER - Handles hold-to-start, exclusive games, timeout
+	// =================================================================
+	const gameManager = {
+		activeGame: null,  // null, 'boxing', or 'soccer'
+		inactivityTimer: null,
+		holdTimer: null,
+		HOLD_DURATION: 2000,  // 2 seconds to start a game
+		INACTIVITY_TIMEOUT: 10000,  // 10 seconds of no interaction
+
+		resetInactivityTimer() {
+			if (this.inactivityTimer) clearTimeout(this.inactivityTimer);
+			if (this.activeGame) {
+				this.inactivityTimer = setTimeout(() => {
+					this.closeCurrentGame();
+				}, this.INACTIVITY_TIMEOUT);
+			}
+		},
+
+		closeCurrentGame() {
+			if (this.activeGame === 'boxing') {
+				boxingGame.cleanup();
+			} else if (this.activeGame === 'soccer') {
+				soccerHandler.cleanup();
+			}
+			this.activeGame = null;
+			if (this.inactivityTimer) {
+				clearTimeout(this.inactivityTimer);
+				this.inactivityTimer = null;
+			}
+		},
+
+		startGame(game) {
+			// Close current game if different
+			if (this.activeGame && this.activeGame !== game) {
+				this.closeCurrentGame();
+			}
+
+			if (this.activeGame === game) return; // Already active
+
+			this.activeGame = game;
+			if (game === 'boxing') {
+				boxingGame.start();
+			} else if (game === 'soccer') {
+				soccerHandler.start();
+			}
+			this.resetInactivityTimer();
+		},
+
+		handleAction(game) {
+			if (this.activeGame !== game) return;
+
+			this.resetInactivityTimer();
+			if (game === 'boxing') {
+				boxingGame.punch();
+			} else if (game === 'soccer') {
+				soccerHandler.kick();
+			}
+		}
+	};
+
+	// Boxing Game
+	const boxingGame = {
+		tvScreen: document.getElementById('tv_screen'),
+		anim: null,
+		isHitting: false,
+		nextPunchLeft: true,
+		container: null,
+
+		start() {
+			// Create the animation container
+			this.container = document.createElement('div');
+			this.container.id = 'bm_animation';
+
+			const clickR = document.createElement('div');
+			clickR.id = 'click_r';
+			const clickL = document.createElement('div');
+			clickL.id = 'click_l';
+
+			this.container.appendChild(clickR);
+			this.container.appendChild(clickL);
+			this.tvScreen.appendChild(this.container);
+
+			// Initialize Lottie animation
+			const animData = {
+				container: this.container,
+				renderer: 'svg',
+				loop: true,
+				prerender: false,
+				autoplay: true,
+				autoloadSegments: false,
+				path: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/51676/fight.json'
+			};
+
+			this.anim = bodymovin.loadAnimation(animData);
+			this.anim.addEventListener('DOMLoaded', () => {
+				this.anim.playSegments([[0,65],[65,75]], true);
+			});
+		},
+
+		punch() {
+			if (!this.anim || this.isHitting) return;
+
+			this.isHitting = true;
+
+			if (this.nextPunchLeft) {
+				this.anim.playSegments([[95,115],[65,75]], true);
+			} else {
+				this.anim.playSegments([[75,95],[65,75]], true);
+			}
+
+			this.nextPunchLeft = !this.nextPunchLeft;
+
+			const self = this;
+			this.anim.addEventListener('loopComplete', function hitComplete() {
+				self.isHitting = false;
+				self.anim.removeEventListener('loopComplete', hitComplete);
+			});
+		},
+
+		cleanup() {
+			if (this.anim) {
+				this.anim.destroy();
+				this.anim = null;
+			}
+			if (this.container) {
+				this.container.remove();
+				this.container = null;
+			}
+			this.isHitting = false;
+			this.nextPunchLeft = true;
+		}
+	};
+
+	// Modify soccerHandler to add cleanup
+	soccerHandler.cleanup = function() {
+		this.clearIntervals();
+		if (this.ball) this.ball.remove();
+		if (this.goalPost) this.goalPost.remove();
+		// Remove any messages
+		const msgs = this.tvScreen.querySelectorAll('.goal-message, .miss-message');
+		msgs.forEach(m => m.remove());
+		// Remove confetti
+		const confetti = this.tvScreen.querySelectorAll('.confetti');
+		confetti.forEach(c => c.remove());
+		this.ball = null;
+		this.goalPost = null;
+		this.state = 0;
+		this.tvScreen.style.background = '';
+		this.tvScreen.style.backgroundColor = '#777';
+	};
+
+	// Override soccerHandler.reset to work with game manager
+	soccerHandler.reset = function() {
+		setTimeout(() => {
+			if (gameManager.activeGame !== 'soccer') return;
+			if (this.ball) this.ball.remove();
+			if (this.goalPost) this.goalPost.remove();
+			this.ball = null;
+			this.goalPost = null;
+			this.state = 0;
+			// Restart the game for another kick
+			this.start();
+		}, 2000);
+	};
+
+	// Setup football overlay with hold-to-start
 	const footballOverlay = document.querySelector("#football_o_button .football-icon");
 	if (footballOverlay) {
+		let holdTimer = null;
+
 		footballOverlay.addEventListener("pointerdown", (e) => {
 			if (demoRunning) return;
 			e.preventDefault();
-			register("o");
+
+			// If soccer is already active, handle kick
+			if (gameManager.activeGame === 'soccer') {
+				if (soccerHandler.state === 1) {
+					soccerHandler.kick();
+					gameManager.resetInactivityTimer();
+				}
+				return;
+			}
+
+			// Start hold timer
+			holdTimer = setTimeout(() => {
+				gameManager.startGame('soccer');
+				holdTimer = null;
+			}, gameManager.HOLD_DURATION);
+		});
+
+		footballOverlay.addEventListener("pointerup", () => {
+			if (holdTimer) {
+				clearTimeout(holdTimer);
+				holdTimer = null;
+			}
+		});
+
+		footballOverlay.addEventListener("pointerleave", () => {
+			if (holdTimer) {
+				clearTimeout(holdTimer);
+				holdTimer = null;
+			}
+		});
+	}
+
+	// Setup boxing overlay with hold-to-start
+	const boxingOverlay = document.querySelector("#boxing_x_button .boxing-icon");
+	if (boxingOverlay) {
+		let holdTimer = null;
+
+		boxingOverlay.addEventListener("pointerdown", (e) => {
+			if (demoRunning) return;
+			e.preventDefault();
+
+			// If boxing is already active, handle punch
+			if (gameManager.activeGame === 'boxing') {
+				boxingGame.punch();
+				gameManager.resetInactivityTimer();
+				return;
+			}
+
+			// Start hold timer
+			holdTimer = setTimeout(() => {
+				gameManager.startGame('boxing');
+				holdTimer = null;
+			}, gameManager.HOLD_DURATION);
+		});
+
+		boxingOverlay.addEventListener("pointerup", () => {
+			if (holdTimer) {
+				clearTimeout(holdTimer);
+				holdTimer = null;
+			}
+		});
+
+		boxingOverlay.addEventListener("pointerleave", () => {
+			if (holdTimer) {
+				clearTimeout(holdTimer);
+				holdTimer = null;
+			}
 		});
 	}
 
@@ -238,11 +472,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 	}
 
 	function register(id){
-		// Route button presses to their handlers
-		if(id === 'o') {
-			soccerHandler.handle();
-		}
-		
+		// Note: Boxing and Soccer games are now handled by the overlay hold-to-start system
+		// The register function only handles Konami code detection for these buttons
+
 		// Konami code detection
 		if(id === konami[k]){
 			k++
