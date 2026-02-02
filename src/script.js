@@ -209,6 +209,69 @@ document.addEventListener('DOMContentLoaded',()=>{
 	let demoRunning = false
 	let cheatActive = false
 
+	// Boxing game state
+	let boxingInitialized = false
+	let boxingAnim = null
+	let isHitting = false
+	let nextPunchLeft = true
+
+	function handleBoxingGame() {
+		if (!boxingInitialized) {
+			// First click: Initialize the boxing game
+			const tvScreen = document.getElementById('tv_screen')
+
+			// Create the animation container
+			const bmAnimation = document.createElement('div')
+			bmAnimation.id = 'bm_animation'
+
+			// Create click zones (hidden but needed for animation structure)
+			const clickR = document.createElement('div')
+			clickR.id = 'click_r'
+			const clickL = document.createElement('div')
+			clickL.id = 'click_l'
+
+			bmAnimation.appendChild(clickR)
+			bmAnimation.appendChild(clickL)
+			tvScreen.appendChild(bmAnimation)
+
+			// Initialize Lottie animation
+			const animData = {
+				container: bmAnimation,
+				renderer: 'svg',
+				loop: true,
+				prerender: false,
+				autoplay: true,
+				autoloadSegments: false,
+				path: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/51676/fight.json'
+			}
+
+			boxingAnim = bodymovin.loadAnimation(animData)
+			boxingAnim.addEventListener('DOMLoaded', () => {
+				boxingAnim.playSegments([[0,65],[65,75]], true)
+			})
+
+			boxingInitialized = true
+		} else {
+			// Subsequent clicks: Trigger punches
+			if (isHitting) return
+
+			isHitting = true
+
+			if (nextPunchLeft) {
+				boxingAnim.playSegments([[95,115],[65,75]], true)
+			} else {
+				boxingAnim.playSegments([[75,95],[65,75]], true)
+			}
+
+			nextPunchLeft = !nextPunchLeft
+
+			boxingAnim.addEventListener('loopComplete', function hitComplete() {
+				isHitting = false
+				boxingAnim.removeEventListener('loopComplete', hitComplete)
+			})
+		}
+	}
+
 	svg.addEventListener('pointerdown',e=>{
 		if(demoRunning) return
 		const t = document.elementFromPoint(e.clientX,e.clientY)
@@ -244,6 +307,11 @@ document.addEventListener('DOMContentLoaded',()=>{
 		}
 		
 		// Konami code detection
+		// Handle X button for boxing game
+		if (id === 'x') {
+			handleBoxingGame()
+		}
+
 		if(id === konami[k]){
 			k++
 			if(k === konami.length){
