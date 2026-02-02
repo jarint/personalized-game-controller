@@ -168,6 +168,7 @@ svg
 		cursor pointer
 		position relative
 		transition transform 0.1s ease
+		pointer-events auto
 
 	.football-icon:hover
 		transform scale(1.1)
@@ -176,6 +177,34 @@ svg
 		transform scale(0.95)
 
 	.football-icon img
+		width 100%
+		height 100%
+		filter drop-shadow(0 2px 4px rgba(0,0,0,0.3))
+		pointer-events none
+
+#boxing_x_button
+	position absolute
+	left 83%
+	top 61%
+	transform translate(-50%, -50%)
+	transform-origin center
+
+	> .boxing-icon
+		display block
+		width 53px
+		height 53px
+		cursor pointer
+		position relative
+		transition transform 0.1s ease
+		pointer-events auto
+
+	.boxing-icon:hover
+		transform scale(1.1)
+
+	.boxing-icon:active
+		transform scale(0.92)
+
+	.boxing-icon img
 		width 100%
 		height 100%
 		filter drop-shadow(0 2px 4px rgba(0,0,0,0.3))
