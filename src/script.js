@@ -8,6 +8,7 @@ import { cameraHandler } from './modules/cameraHandler.js';
 import { setupButton, setupToggleButton } from './modules/buttonSetup.js';
 import { konamiCode } from './modules/konami.js';
 import { cheatCombinations, showRedScreen, showBlackHole } from './modules/cheatCombinations.js';
+import * as personalityPanel from './modules/personalityPanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const svg = document.getElementById('pad');
@@ -51,6 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	soccerHandler.init();
 	boxingGame.init();
 
+	// Initialize personality panel
+	personalityPanel.init();
+
 	// Register games with game manager
 	gameManager.registerGame('dna', dnaHelix);
 	gameManager.registerGame('bb8', bb8Handler);
@@ -58,15 +62,26 @@ document.addEventListener('DOMContentLoaded', () => {
 	gameManager.registerGame('boxing', boxingGame);
 
 	// Register cheat combinations
-	// Camera -> Boxing -> Camera -> Boxing = Black Hole Visualization
+	// 1. Camera -> Boxing -> Camera -> Boxing = Black Hole Visualization
 	cheatCombinations.registerSequence(
 		['camera', 'boxing', 'camera', 'boxing'],
-		() => showBlackHole(0), // 0 = click to dismiss, or set duration in ms
+		() => showBlackHole(0),
 		'Black Hole Cheat'
 	);
 
-	// Add more cheat combinations here as needed
-	// Example: cheatCombinations.registerSequence(['soccer', 'bb8', 'soccer'], () => { /* your action */ }, 'My Cheat');
+	// 2. Camera -> Soccer -> Camera -> Soccer = Galaxy Warp (placeholder - shows red screen for now)
+	cheatCombinations.registerSequence(
+		['camera', 'soccer', 'camera', 'soccer'],
+		() => showRedScreen(3000),
+		'Galaxy Warp'
+	);
+
+	// 3. Camera -> Boxing -> Soccer -> BB8 = Cosmic Dance (placeholder - shows red screen for now)
+	cheatCombinations.registerSequence(
+		['camera', 'boxing', 'soccer', 'bb8'],
+		() => showRedScreen(3000),
+		'Cosmic Dance'
+	);
 
 	// Setup camera handler (Triangle button - DNA helix)
 	cameraHandler.setup(() => demoRunning);

@@ -21,12 +21,65 @@ html lang="en"
     script type="module" src="./script.js"
   body
     main#app
-        // TV screen component -- has a glowing halo effect
-        #tv
-            #tv_container
-                #tv_monitor
-                    // the simulation, animations, games, and interactions are played in the TV screen element
-                    #tv_screen
+        // Main layout with side panels
+        .main-layout
+            // Left panel - Cheat Codes
+            #cheat-codes-panel.side-panel
+                h3 Cheat Codes
+                .cheat-list
+                    .cheat-item
+                        .cheat-name Black Hole
+                        .cheat-sequence
+                            span.cheat-key C
+                            span.cheat-key B
+                            span.cheat-key C
+                            span.cheat-key B
+                    .cheat-item
+                        .cheat-name Interest 2
+                        .cheat-sequence
+                            span.cheat-key C
+                            span.cheat-key F
+                            span.cheat-key C
+                            span.cheat-key F
+                    .cheat-item
+                        .cheat-name Interest 3
+                        .cheat-sequence
+                            span.cheat-key C
+                            span.cheat-key B
+                            span.cheat-key F
+                            span.cheat-key P
+                .legend
+                    h4 Legend
+                    .legend-item
+                        span.legend-key C
+                      
+                        span.legend-name Camera - Jarin Button
+                    .legend-item
+                        span.legend-key B
+                      
+                        span.legend-name Boxing - Karan Button
+                    .legend-item
+                        span.legend-key F
+                        
+                        span.legend-name Football - Minhaz Button
+                    .legend-item
+                        span.legend-key P
+                        
+                        span.legend-name Paula - Paula Button
+
+            // TV screen component -- has a glowing halo effect
+            #tv
+                #tv_container
+                    #tv_monitor
+                        // the simulation, animations, games, and interactions are played in the TV screen element
+                        #tv_screen
+
+            // Right panel - Personality Analysis
+            #personality-panel.side-panel
+                h3 Personality Analysis
+                #personality-content
+                    .personality-placeholder
+                        p Hover over or click a button to learn more about what it represents.
         #wrap
             .controller_stage
                 svg#pad[xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill-rule="evenodd" clip-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" viewbox="0 0 4550.92 2942.49"]
