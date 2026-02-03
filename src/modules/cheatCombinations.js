@@ -104,3 +104,5 @@ export function showRedScreen(duration = 3000) {
 
 // Re-export effects from effects folder for convenience
 export { showBlackHole } from './effects/blackHole.js';
+export { showSketch } from './effects/sketch.js';
+export { showPolaroid } from './effects/polaroid.js';
