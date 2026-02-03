@@ -7,7 +7,7 @@ import { boxingGame } from './modules/boxingGame.js';
 import { cameraHandler } from './modules/cameraHandler.js';
 import { setupButton, setupToggleButton } from './modules/buttonSetup.js';
 import { konamiCode } from './modules/konami.js';
-import { cheatCombinations, showRedScreen, showBlackHole, showSketch } from './modules/cheatCombinations.js';
+import { cheatCombinations, showRedScreen, showBlackHole, showSketch, showPolaroid } from './modules/cheatCombinations.js';
 import * as personalityPanel from './modules/personalityPanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,11 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		'Black Hole Cheat'
 	);
 
-	// 2. Camera -> Soccer -> Camera -> Soccer = Galaxy Warp (placeholder - shows red screen for now)
+	// 2. Camera -> Soccer -> Camera -> Soccer = Polaroid Photos
 	cheatCombinations.registerSequence(
 		['camera', 'soccer', 'camera', 'soccer'],
-		() => showRedScreen(3000),
-		'Galaxy Warp'
+		() => showPolaroid(),
+		'Polaroid Photos'
 	);
 
 	// 3. Camera -> Boxing -> Soccer -> BB8 = Sketch Pad
