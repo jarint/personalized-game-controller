@@ -7,6 +7,7 @@ import { boxingGame } from './modules/boxingGame.js';
 import { cameraHandler } from './modules/cameraHandler.js';
 import { setupButton, setupToggleButton } from './modules/buttonSetup.js';
 import { konamiCode } from './modules/konami.js';
+import { cheatCombinations, showRedScreen, showBlackHole } from './modules/cheatCombinations.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const svg = document.getElementById('pad');
@@ -56,6 +57,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	gameManager.registerGame('soccer', soccerHandler);
 	gameManager.registerGame('boxing', boxingGame);
 
+	// Register cheat combinations
+	// Camera -> Boxing -> Camera -> Boxing = Black Hole Visualization
+	cheatCombinations.registerSequence(
+		['camera', 'boxing', 'camera', 'boxing'],
+		() => showBlackHole(0), // 0 = click to dismiss, or set duration in ms
+		'Black Hole Cheat'
+	);
+
+	// Add more cheat combinations here as needed
+	// Example: cheatCombinations.registerSequence(['soccer', 'bb8', 'soccer'], () => { /* your action */ }, 'My Cheat');
+
 	// Setup camera handler (Triangle button - DNA helix)
 	cameraHandler.setup(() => demoRunning);
 
@@ -63,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// O Button - Soccer Game
 	setupButton(
 		"#football_o_button .football-icon",
+		'soccer',
 		'soccer',
 		() => demoRunning,
 		() => {
@@ -76,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	setupButton(
 		"#boxing_x_button .boxing-icon",
 		'boxing',
+		'boxing',
 		() => demoRunning
 	);
 
@@ -83,8 +97,66 @@ document.addEventListener('DOMContentLoaded', () => {
 	setupToggleButton(
 		"#theme_square_button .theme-icon",
 		'bb8',
+		'bb8',
 		() => demoRunning
 	);
+
+	// Triangle Button - Camera (DNA) - needs special handling for click tracking
+	const cameraOverlay = document.querySelector("#triangle_camera .camera");
+	if (cameraOverlay) {
+		let holdTimer = null;
+		let isHolding = false;
+
+		cameraOverlay.addEventListener("pointerdown", (e) => {
+			if (demoRunning) return;
+			e.preventDefault();
+
+			isHolding = false;
+
+			// If DNA already active: just flash + reset timer
+			if (gameManager.activeGame === "dna") {
+				gameManager.resetInactivityTimer();
+				// Trigger flash if available
+				cameraOverlay.classList.remove("is_flashing");
+				void cameraOverlay.offsetWidth;
+				cameraOverlay.classList.add("is_flashing");
+				return;
+			}
+
+			// Start hold timer (2s)
+			holdTimer = setTimeout(() => {
+				isHolding = true;
+				gameManager.startGame("dna");
+				holdTimer = null;
+				// Trigger flash
+				cameraOverlay.classList.remove("is_flashing");
+				void cameraOverlay.offsetWidth;
+				cameraOverlay.classList.add("is_flashing");
+			}, gameManager.HOLD_DURATION);
+		});
+
+		const cancelCameraHold = () => {
+			if (holdTimer) {
+				clearTimeout(holdTimer);
+				holdTimer = null;
+				
+				// Flash on short click
+				cameraOverlay.classList.remove("is_flashing");
+				void cameraOverlay.offsetWidth;
+				cameraOverlay.classList.add("is_flashing");
+
+				// If released before hold completed, register as click for cheat combos
+				if (!isHolding) {
+					cheatCombinations.registerClick('camera');
+				}
+			}
+			isHolding = false;
+		};
+
+		cameraOverlay.addEventListener("pointerup", cancelCameraHold);
+		cameraOverlay.addEventListener("pointerleave", cancelCameraHold);
+		cameraOverlay.addEventListener("pointercancel", cancelCameraHold);
+	}
 
 	// Controller button event listeners
 	svg.addEventListener('pointerdown', e => {

@@ -325,8 +325,8 @@ svg {
   place-items: center;
 }
 #tv_container {
-  max-width: 780px;
-  width: 780px;
+  max-width: 1400px;
+  width: 95vw;
 }
 #tv_monitor {
   background: #000;
