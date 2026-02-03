@@ -7,7 +7,7 @@ import { boxingGame } from './modules/boxingGame.js';
 import { cameraHandler } from './modules/cameraHandler.js';
 import { setupButton, setupToggleButton } from './modules/buttonSetup.js';
 import { konamiCode } from './modules/konami.js';
-import { cheatCombinations, showRedScreen, showBlackHole } from './modules/cheatCombinations.js';
+import { cheatCombinations, showRedScreen, showBlackHole, showSketch } from './modules/cheatCombinations.js';
 import * as personalityPanel from './modules/personalityPanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -76,11 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		'Galaxy Warp'
 	);
 
-	// 3. Camera -> Boxing -> Soccer -> BB8 = Cosmic Dance (placeholder - shows red screen for now)
+	// 3. Camera -> Boxing -> Soccer -> BB8 = Sketch Pad
 	cheatCombinations.registerSequence(
 		['camera', 'boxing', 'soccer', 'bb8'],
-		() => showRedScreen(3000),
-		'Cosmic Dance'
+		() => showSketch(),
+		'Sketch Pad'
 	);
 
 	// Setup camera handler (Triangle button - DNA helix)
