@@ -392,7 +392,7 @@ svg
 	position absolute
 	right 1%
 	width 50px
-	height 100px
+	height 140px
 	background linear-gradient(to right, transparent 0%, transparent 30%, #ff0000 30%, #ff0000 35%, transparent 35%, transparent 65%, #ff0000 65%, #ff0000 70%, transparent 70%)
 	border 3px solid #cc0000
 	border-radius 5px

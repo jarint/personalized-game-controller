@@ -18,6 +18,8 @@ export function setupButton(selector, gameName, buttonId, isDemoRunning, onActio
 	let isHolding = false;
 
 	buttonOverlay.addEventListener("pointerdown", (e) => {
+		// Skip if black hole or other cheat effect is active
+		if (window._blackHoleActive) return;
 		if (isDemoRunning()) return;
 		e.preventDefault();
 
@@ -75,6 +77,8 @@ export function setupToggleButton(selector, gameName, buttonId, isDemoRunning) {
 	let isHolding = false;
 
 	buttonOverlay.addEventListener("pointerdown", (e) => {
+		// Skip if black hole or other cheat effect is active
+		if (window._blackHoleActive) return;
 		if (isDemoRunning()) return;
 		e.preventDefault();
 

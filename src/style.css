@@ -383,7 +383,7 @@ svg {
   position: absolute;
   right: 1%;
   width: 50px;
-  height: 100px;
+  height: 140px;
   background: linear-gradient(to right, transparent 0%, transparent 30%, #f00 30%, #f00 35%, transparent 35%, transparent 65%, #f00 65%, #f00 70%, transparent 70%);
   border: 3px solid #c00;
   border-radius: 5px;

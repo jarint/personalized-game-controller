@@ -4,7 +4,7 @@ export const gameManager = {
 	inactivityTimer: null,
 	holdTimer: null,
 	HOLD_DURATION: 2000,  // 2 seconds to start a game
-	INACTIVITY_TIMEOUT: 10000,  // 10 seconds of no interaction
+	INACTIVITY_TIMEOUT: 30000,  // 5 minutes of no interaction
 	
 	// Registry of game handlers - populated by registerGame()
 	games: {},

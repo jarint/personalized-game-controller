@@ -76,17 +76,7 @@ export function showBlackHole(duration = 0) {
     .blackhole-container .ui-panel:hover {
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(180,180,220,0.09) inset;
     }
-    .blackhole-container #controls { bottom: 20px; right: 20px; }
-    .blackhole-container #autoRotateToggle {
-        cursor: pointer; padding: 8px 5px; display: flex; align-items: center;
-        gap: 8px; color: inherit; font-size: inherit; transition: color 0.2s ease;
-    }
-    .blackhole-container #autoRotateToggle:hover { color: #fff; }
-    .blackhole-container #autoRotateToggle span { vertical-align: middle; }
-    .blackhole-container .rotate-icon {
-        width: 1.1em; height: 1.1em; stroke: currentColor; stroke-width: 1.8;
-        fill: none; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle;
-    }
+
 	`;
 	document.head.appendChild(style);
 
@@ -94,10 +84,7 @@ export function showBlackHole(duration = 0) {
 	container.innerHTML = `
 <div id="info">
     Black Hole<br>
-    <span style="font-size: 14px; opacity: 0.8;">Click and drag to rotate • Click anywhere to close</span>
-</div>
-<div id="controls" class="ui-panel">
-    <div id="autoRotateToggle" title="Toggle automatic rotation"></div>
+    <span style="font-size: 14px; opacity: 0.8;">Click and drag to rotate • Hold any button for 2s to exit</span>
 </div>
 	`;
 
@@ -207,19 +194,7 @@ export function showBlackHole(duration = 0) {
 		controls.enablePan = false;
 		controls.update();
 
-		let autoRotateEnabled = false;
-		const autoRotateToggle = container.querySelector('#autoRotateToggle');
-		const rotateIconSVG = `<svg class="rotate-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`;
-		updateAutoRotateText();
-		autoRotateToggle.addEventListener('click', (e) => {
-			e.stopPropagation();
-			autoRotateEnabled = !autoRotateEnabled;
-			controls.autoRotate = autoRotateEnabled;
-			updateAutoRotateText();
-		});
-		function updateAutoRotateText() {
-			autoRotateToggle.innerHTML = rotateIconSVG + `<span>Auto-Rotate: ${autoRotateEnabled ? "ON" : "OFF"}</span>`;
-		}
+
 
 		// Starfield with colors and twinkle
 		const starGeometry = new THREE.BufferGeometry();
@@ -545,36 +520,82 @@ export function showBlackHole(duration = 0) {
 		</div>`;
 	});
 
-	// Close when any controller button is pressed
+	// Close when any controller button is held for 2 seconds, then start that button's game
 	const controllerButtons = [
-		'#triangle_camera',
-		'#football_o_button', 
-		'#boxing_x_button',
-		'#bb8_square_button'
+		{ selector: '#triangle_camera', game: 'dna' },
+		{ selector: '#football_o_button', game: 'soccer' },
+		{ selector: '#boxing_x_button', game: 'boxing' },
+		{ selector: '#theme_square_button', game: 'bb8' }
 	];
 	
-	const closeBlackHole = () => {
+	let holdTimeout = null;
+	let activeButtonGame = null;
+	const HOLD_DURATION = 2000;
+	
+	// Mark that black hole is active globally
+	window._blackHoleActive = true;
+	
+	const closeBlackHole = (startGame = null) => {
+		window._blackHoleActive = false;
 		if (container._cleanup) container._cleanup();
 		container.remove();
 		style.remove();
 		// Remove button listeners
-		controllerButtons.forEach(selector => {
+		controllerButtons.forEach(({ selector }) => {
 			const btn = document.querySelector(selector);
-			if (btn) btn.removeEventListener('mousedown', closeBlackHole);
+			if (btn) {
+				btn.removeEventListener('pointerdown', handleButtonDown, true);
+				btn.removeEventListener('pointerup', handleButtonUp, true);
+				btn.removeEventListener('pointerleave', handleButtonUp, true);
+				btn.removeEventListener('pointercancel', handleButtonUp, true);
+			}
 		});
+		
+		// Start the game for the button that was held
+		if (startGame) {
+			// Dynamically import gameManager to avoid circular dependencies
+			import('../gameManager.js').then(({ gameManager }) => {
+				gameManager.startGame(startGame);
+			});
+		}
 	};
 	
-	controllerButtons.forEach(selector => {
+	const handleButtonDown = (e) => {
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		e.preventDefault();
+		
+		// Find which button was pressed
+		const buttonConfig = controllerButtons.find(({ selector }) => 
+			e.currentTarget.matches(selector)
+		);
+		activeButtonGame = buttonConfig ? buttonConfig.game : null;
+		
+		holdTimeout = setTimeout(() => {
+			closeBlackHole(activeButtonGame);
+		}, HOLD_DURATION);
+	};
+	
+	const handleButtonUp = (e) => {
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		if (holdTimeout) {
+			clearTimeout(holdTimeout);
+			holdTimeout = null;
+		}
+		activeButtonGame = null;
+	};
+	
+	controllerButtons.forEach(({ selector }) => {
 		const btn = document.querySelector(selector);
-		if (btn) btn.addEventListener('mousedown', closeBlackHole);
+		if (btn) {
+			// Use capture phase to intercept before buttonSetup handlers
+			btn.addEventListener('pointerdown', handleButtonDown, true);
+			btn.addEventListener('pointerup', handleButtonUp, true);
+			btn.addEventListener('pointerleave', handleButtonUp, true);
+			btn.addEventListener('pointercancel', handleButtonUp, true);
+		}
 	});
-
-	// Auto-remove after duration
-	if (duration > 0) {
-		setTimeout(() => {
-			closeBlackHole();
-		}, duration);
-	}
 
 	return container;
 }
