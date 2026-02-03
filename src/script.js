@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 	const svg = document.getElementById('pad')
 	const demo = document.getElementById('demo')
 
-	//const ids = ['up','down','left','right','x','o','square','triangle','start','select','lb','rb']
 	const ids = ['x','o','square'] // make only the four acction buttons clickable
 	const pressed = new Set()
 
@@ -75,7 +74,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 			camera.addEventListener("pointerleave", cancelHold);
 			camera.addEventListener("pointercancel", cancelHold);
 
-			// remove class after animation ends (listen on the light if present)
+			// remove class after animation ends
 			const light =
 			camera.querySelector(".light") ||
 			document.querySelector("#triangle_camera .light");
@@ -218,9 +217,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 		}
 	};
 
-	// ===============================
-	// BB-8 TV MODULE (converted to vanilla JS)
-	// ===============================
+	// BB-8 TV animation
 	const bb8Handler = {
 		tvScreen: document.getElementById("tv_screen"),
 		root: null,
@@ -272,7 +269,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 		});
 
 	
-		// Inject HTML (your CodePen HTML)
+		// Inject HTML
 		this.root.innerHTML = `
 			<div class="message">
 			<h2>move mouse or tap.</h2>
@@ -465,10 +462,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 	};
 
 
-
-	// =================================================================
-	// GAME MANAGER - Handles hold-to-start, exclusive games, timeout
-	// =================================================================
+	// GAME MANAGER - Handles hold-to-start, user-specific games/animations, timeout
 	const gameManager = {
 		activeGame: null,  // null, 'boxing', or 'soccer'
 		inactivityTimer: null,
@@ -735,12 +729,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 					
 			const rect = this.tvScreen.getBoundingClientRect();
 					
-			// Set the canvas *buffer* size (real pixels)
 			this.canvas.width = Math.floor(rect.width);
 			this.canvas.height = Math.floor(rect.height);
 
-					
-			// Tell Zdog about size change if scene exists
+				
 			if (this.scene) {
 				this.scene.setSize(this.canvas.width, this.canvas.height);
 			}
@@ -749,16 +741,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 			if (!this.tvScreen) return;
 			if (this.scene) return; // already running
 
-			// Create canvas dynamically (like soccer/boxing)
+			// Create canvas 
 			this.canvas = document.createElement("canvas");
 			this.canvas.className = "dna_canvas";
 			this.tvScreen.appendChild(this.canvas);
 
 
-			// IMPORTANT: make canvas buffer match tv_screen
 			this.resizeCanvasToTv();
 
-			// keep updated on resize
 			this._on_resize = () => this.resizeCanvasToTv();
 			window.addEventListener("resize", this._on_resize);
 
@@ -771,7 +761,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 				resize: false, // resize to canvas element
 			});
 
-			// --- your existing DNA setup below ---
 			const MARGIN = 15;
 			const SPAN = 40;
 			const STRAND_STROKE = 4;
@@ -830,7 +819,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 			this.scene = null;
 
 			if (this.canvas) {
-				this.canvas.remove(); // IMPORTANT: remove from tvScreen like others do
+				this.canvas.remove(); 
 				this.canvas = null;
 			}
 
@@ -878,10 +867,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   
 
-
-	// =================================================================
 	// END BUTTON HANDLERS
-	// =================================================================
 	let demoRunning = false
 	let cheatActive = false
 
@@ -915,9 +901,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 	function register(id){
 		// Note: Boxing and Soccer games are now handled by the overlay hold-to-start system
-		// The register function only handles Konami code detection for these buttons
 
-		// Konami code detection
 		if(id === konami[k]){
 			k++
 			if(k === konami.length){
