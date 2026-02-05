@@ -113,6 +113,9 @@ The generated html already links the css stylesheet. Every time you modify eithe
 again to regenerate the html and CSS. 
 
 
+If you need some guidance on how/where to add your own animations to the code -- check out some of the comments I've left in index.slim and style.stylus.
+
+
 **Some commands I added to package.json that you may find useful**:
 
 
@@ -123,10 +126,18 @@ open two separate terminals, then run one of the following commands in each term
 2. `npm run watch:stylus`
 
 
-This allows you to see live changes in each index.slim and style.stylus without having to re-run `npm run build` every single time. All you need to do is hit save while working on either of those files and things should update.
+This allows you to see live changes in each index.slim and style.stylus without having to re-run `npm run build` every single time. All you need to do is hit save while working on either of those files and things should update in real-time.
 
 
 **Important**:
 
 
-Once you're happy with your changes and tested them, commit them to your branch and open a pull request to 'dev' (i.e. **NOT** main). Once checked and closed by another team member, I'll test the dev branch and pull into 'main'.
+Once you're happy with your changes and tested them, commit them to your branch and open a pull request to 'dev' (i.e. **NOT** main). Once checked and closed by another team member, I'll test the dev branch and merge into 'main'.
+
+
+**Current Branches**:
+
+please add your own branches
+1. main → deployment to gh-pages from here.
+2. dev → integration branch, merges to main.
+3. JARIN-branch → merges to dev only
