@@ -145,3 +145,12 @@ please add your own branches
 1. main → deployment to gh-pages from here.
 2. dev → integration branch, merges to main.
 3. JARIN-branch → merges to dev only
+
+
+**This project utilizes code and inspiration from the following CodePen projects**:
+
+SVG Clouds by Metahari (https://codepen.io/Metahari/pen/wxbOEv)
+Pure CSS 3D Cube by VoXelo (https://codepen.io/VoXelo/pen/wBKvJxd)
+SVG Path Morphing by Joris van Raaij (https://codepen.io/jorisvanr/pen/EZarYE)
+CSS Glassmorphism by Matt Dixon (https://codepen.io/mdixondesigns/pen/PPEJwz)
+Animated Background by Brad Arnett (https://codepen.io/bradarnett/pen/XyZKaG)
